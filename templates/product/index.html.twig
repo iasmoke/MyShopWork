@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Описание</th>
+        <th>Удаление</th>
+    </tr>
+
+    {% for product in products %}
+    <tr>
+    <th>{{ product.id }}</th>
+        <th><a href="{{ path('product_show', {id: product.id}) }}"> {{ product.title }}</a></th>
+    <th>{{ product.price }}</th>
+    <th>{{ product.description }}</th>
+        <td><a href="{{ path('product_delete', {id: product.id}) }}" class="btn btn-danger">Удаление</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
