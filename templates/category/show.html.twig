@@ -1,11 +1,45 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>{{ cotegory.name }}</h1>
+    <h1>{{ category.name }}</h1>
 
+    <ul>
+        {% if category.parent %}
+            <li>
+                <a href="{{ path('category_show', {id: category.parent.id}) }}">
+                    Назад
+                </a>
+            </li>
+        {% endif %}
+
+        {% for subcategory in category.subcategories %}
+        <li>
+            <a href="{{ path('category_show', {id: subcategory.id}) }}">
+                {{ subcategory.name }}
+            </a>
+        </li>
+        {% endfor%}
+    </ul>
+
+    <div class="card-deck product">
+        {% for product in category.products %}
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="//placehold.it/100x60" alt="{{ product.title }}">
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                    <a href="{{ path('product_show',{id:product.id}) }}" {{ product.title }}></a>
+                    <p class="card-text">{{ product.title }}</p>
+                    <p class="card-text">{{ product.price }}</p>
+                </div>
+
+            </div>
+
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block title %}
-    {{ cotegory.name }}
+    {{ category.name }}
 {% endblock %}
 
