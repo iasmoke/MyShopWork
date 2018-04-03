@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {% endblock %}
+
+{% block body %}
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Категории</th>
+    </tr>
+
+    {% for category in categories %}
+    <tr>
+    <th>{{ category.id }}</th>
+    <th><a href="{{ path('category_show', {id: category.id}) }}"> {{ category.name }}</a></th>
+</tr>
+    {% endfor %}
+</table>
+{% endblock %}
