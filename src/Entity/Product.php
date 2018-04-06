@@ -39,6 +39,16 @@ private $description;
  * @ORM\JoinColumn(nullable=true)
  */
 private $category;
+private $__EXTRA__LINE;
+
+/**
+ * @ORM\Column(type="boolean", nullable=true, options={"default": false})
+ */
+private $isTop;
+
+
+
+
 
     public function getId()
     {
@@ -95,6 +105,18 @@ private $category;
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getIsTop(): ?bool
+    {
+        return $this->isTop;
+    }
+
+    public function setIsTop(?bool $isTop): self
+    {
+        $this->isTop = $isTop;
 
         return $this;
     }
