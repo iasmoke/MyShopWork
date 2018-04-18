@@ -31,7 +31,7 @@ class Category
     private $products;
 
     /**
-     * @var Product[]
+     * @var Category
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="subcategories")
      * @ORM\JoinColumn(name="parent_id", nullable=true)
@@ -48,6 +48,7 @@ class Category
 
     public function __construct()
     {
+        $this->name = '';
         $this->products = new ArrayCollection();
         $this->subcategories = new ArrayCollection();
     }
@@ -142,4 +143,10 @@ class Category
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
 }
