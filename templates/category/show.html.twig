@@ -24,7 +24,13 @@
     <div class="card-deck product">
         {% for product in category.products %}
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="//placehold.it/100x60" alt="{{ product.title }}">
+                <img class="card-img-top"
+                     src="{%- if product.imageName -%}
+                           {{ vich_uploader_asset(product, 'imageFile') }}
+                       {%- else -%}
+
+                       {%- endif -%}"
+                     alt="{{ product.title }}">
                 <div class="card-body">
                     <h5 class="card-title"></h5>
                     <p class="card-text"></p>
