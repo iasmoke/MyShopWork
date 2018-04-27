@@ -2,14 +2,22 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
- * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
+ * @ORM\Entity
  * @ORM\Table(name="orders")
  */
 class Order
 {
+
+    const STATUS_DRAFT = 0;
+    const STATUS_ORDERED = 1;
+    const STATUS_SENT = 2;
+    const STATUS_DONE = 3;
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -18,92 +26,164 @@ class Order
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
      */
     private $dateTime;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var int
+     *
+     * @ORM\Column(type="smallint", options={"default": 0})
      */
-    private $Status;
+    private $status;
+
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=true)
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default": 0})
      */
     private $paymentState;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="orders")
+     * @ORM\JoinColumn()
      */
-    private $User;
-
+    private $user;
     /**
-     * @ORM\Column(type="string", length=50)
+     * @var float
+     *
+     * @ORM\Column(type="decimal", precision=10, scale=2, options={"default": 0})
      */
     private $sumOrder;
+
+    /**
+     * @var OrderItem
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\OrderItem", mappedBy="order")
+     */
+    private $items;
+
+
+    public function __construct()
+    {
+        $this->status = self::STATUS_DRAFT;
+        $this->dateTime = new \DateTime();
+        $this->paymentState = false;
+        $this->sumOrder = 0;
+        $this->items = new ArrayCollection();
+    }
+
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getDateTime(): ?string
+    public function getDateTime(): ?\DateTimeInterface
     {
         return $this->dateTime;
     }
 
-    public function setDateTime(string $dateTime): self
+    public function setDateTime(\DateTimeInterface $dateTime): self
     {
         $this->dateTime = $dateTime;
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?int
     {
         return $this->Status;
     }
 
-    public function setStatus(string $Status): self
+    public function setStatus(int $Status): self
     {
         $this->Status = $Status;
 
         return $this;
     }
 
-    public function getPaymentState(): ?string
+    public function getPaymentState(): ?bool
     {
         return $this->paymentState;
     }
 
-    public function setPaymentState(?string $paymentState): self
+    public function setPaymentState(?bool $paymentState): self
     {
         $this->paymentState = $paymentState;
 
         return $this;
     }
 
-    public function getUser(): ?string
+    public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function setUser(string $User): self
+    public function setUser(?User $user): self
     {
-        $this->User = $User;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getSumOrder(): ?string
+    public function getSumOrder()
     {
         return $this->sumOrder;
     }
 
-    public function setSumOrder(string $sumOrder): self
+    public function setSumOrder($sumOrder): self
     {
         $this->sumOrder = $sumOrder;
 
         return $this;
     }
+
+
+
+    /**
+     * @return Collection|OrderItem[]
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(OrderItem $item): self
+    {
+        if (!$this->items->contains($item)) {
+            $this->items[] = $item;
+            $item->setOrder($this);
+            $this->updateValueOrder();
+        }
+        return $this;
+    }
+
+    public function removeItem(OrderItem $item): self
+    {
+        if ($this->items->contains($item)) {
+            $this->items->removeElement($item);
+            // set the owning side to null (unless already changed)
+            if ($item->getOrder() === $this) {
+                $item->setOrder(null);
+            }
+            $this->updateValueOrder();
+        }
+        return $this;
+    }
+    public function updateValueOrder()
+    {
+        $total = 0;
+
+            foreach ($this->items as $item) {
+                $total += $item->getvalueOrder();
+            }
+        $this->sumOrder = $total;
+    }
+
 }
