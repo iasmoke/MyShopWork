@@ -112,7 +112,7 @@ class OrderItem
         return $this;
     }
 
-    public function getValueOrder(): ?string
+    public function getValueOrder()
     {
         return $this->valueOrder;
     }

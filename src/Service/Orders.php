@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Product;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -31,7 +32,7 @@ class Orders
         return $this->session->has(self::CART_ID);
     }
 
-    public function getCart(): Order
+    public function getCart(User $user = null): Order
     {
         $order = null;
         $orderID = $this->session->get(self::CART_ID);
@@ -44,19 +45,20 @@ class Orders
         if ($order === null) {
             $order = new Order();
             $this->em->persist($order);
-            $this->em->flush();
+
         }
+
+        if ($user) {
+            $order->setUser($user);
+        }
+        $this->em->flush();
         $this->session->set(self::CART_ID, $order->getId());
 
         return $order;
 
     }
 
-    /**
-     * @param Product $product
-     * @param $quantity
-     */
-    public function addToCart(Product $product, $quantity)
+    public function addToCart(Product $product, $quantity, User $user = null): Order
     {
         $order = $this->getCart();
         $orderItem = null;
@@ -76,10 +78,33 @@ class Orders
             $order->addItem($orderItem);
 
         }
-        $orderItem->setQuantityOrder($orderItem->getQuantityOrder()+ $quantity);
+        $orderItem->setQuantityOrder($orderItem->getQuantityOrder() + $quantity);
 
         $this->em->flush();
 
         return $order;
+    }
+
+    public function removeFromCart(OrderItem $item)
+    {
+
+        $this->em->remove($item);
+        $cart = $this->getCart();
+        $cart->updateValueOrder();
+        $this->em->flush();
+
+        return $cart;
+    }
+
+    public function updateCartItemQuantity(OrderItem $item, $quantityOrder)
+    {
+        $item->setQuantityOrder($quantityOrder);
+        $this->em->flush();
+
+        $cart = $this->getCart();
+        $cart->updateValueOrder();
+        $this->em->flush();
+        return $cart;
+
     }
 }

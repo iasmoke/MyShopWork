@@ -62,7 +62,7 @@ class Order
     private $sumOrder;
 
     /**
-     * @var OrderItem
+     * @var OrderItem[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\OrderItem", mappedBy="order")
      */
@@ -186,4 +186,12 @@ class Order
         $this->sumOrder = $total;
     }
 
+    public function getProductsCount()
+    {
+        $count = 0;
+        foreach ($this->items as $item){
+            $count += $item->getQuantityOrder();
+        }
+        return $count;
+    }
 }
